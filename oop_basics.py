@@ -66,6 +66,7 @@ class Person():
     energy = 0
     name = ''
     isUp = True
+    isStill = True
     # Método constructor
 
     def __init__(self, name='Sin nombre'):
@@ -88,16 +89,20 @@ class Person():
     def walk(self, steps, direction):
         if not(self.isUp):  # self.isUp == True
             self.up()
+        self.stop(False)
         print(f'{self.name} caminando {steps} pasos hacia {direction}')
+        self.stop()
 
     def run(self, speed, distance):
         if not (self.isUp):
             self.up()
+        self.stop(False)
         print(
             f'{self.name} corriendo a una velocidad de {speed} una distancia de {distance}')
+        self.stop()
 
     def sit(self):
-        if self.isUp:
+        if self.isUp:  # estaDePie
             print(f'{self.name} ahora está sentado')
             self.isUp = False
         else:
@@ -109,6 +114,13 @@ class Person():
         else:
             print(f'{self.name} ya está de pié /=')
 
+    def stop(self, still=True):
+        self.isStill = still
+        if self.isStill:
+            print(f'{self.name} está detenido')
+        else:
+            print(f'{self.name} listo para moverse')
+            self.isStill = True
 
             # Creo una instancia de la clase Mandarina
 mandi = Mandarina()  # Instancia/Objeto
@@ -154,9 +166,12 @@ a = 0  # Variable
 eduardo = Person('Eduardo')
 eduardo.walk(3, 'adelante')
 eduardo.sit()
-gilberto = Person('Gilberto')
-gilberto.walk(5, 'atrás')
-gilberto.run('1Km/h', '5Km')
-eduardo.up()
-eduardo.sit()
-eduardo.up()
+eduardo.run('3Km/h', '1K')
+eduardo.run('7Km/h', '4K')
+# gilberto = Person('Gilberto')
+# gilberto.walk(5, 'atrás')
+# gilberto.run('1Km/h', '5Km')
+# gilberto.stop()
+# eduardo.up()
+# eduardo.sit()
+# eduardo.up()
