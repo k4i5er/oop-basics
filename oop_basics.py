@@ -65,8 +65,9 @@ class Mandarina():
 class Person():
     energy = 0
     name = ''
-
+    isUp = True
     # Método constructor
+
     def __init__(self, name='Sin nombre'):
         self.name = name
         self.energy = 1
@@ -84,12 +85,34 @@ class Person():
     def set_name(self, name):
         self.name = name
 
+    def walk(self, steps, direction):
+        if not(self.isUp):  # self.isUp == True
+            self.up()
+        print(f'{self.name} caminando {steps} pasos hacia {direction}')
 
-# Creo una instancia de la clase Mandarina
+    def run(self, speed, distance):
+        if not (self.isUp):
+            self.up()
+        print(
+            f'{self.name} corriendo a una velocidad de {speed} una distancia de {distance}')
+
+    def sit(self):
+        if self.isUp:
+            print(f'{self.name} ahora está sentado')
+            self.isUp = False
+        else:
+            print(f'{self.name} ya está sentado /=')
+
+    def up(self):
+        if not (self.isUp):
+            print(f'{self.name} ahora está de pié')
+        else:
+            print(f'{self.name} ya está de pié /=')
+
+
+            # Creo una instancia de la clase Mandarina
 mandi = Mandarina()  # Instancia/Objeto
-eduardo = Person('Eduardo')
 # eduardo.set_name('Eduardo')
-gilberto = Person('Gilberto')
 # gilberto.set_name('Gilberto')
 bibiana = Person('Bibiana')
 # bibiana.set_name('Bibiana')
@@ -97,32 +120,43 @@ otro = Person()
 
 a = 0  # Variable
 
-mandi.show_props()
-# eduardo.show_props()
-# mandi.rot()
 # mandi.show_props()
-eduardo.set_energy(mandi.get_energy())
-gilberto.set_energy(mandi.get_energy())
-eduardo.show_props()
-gilberto.show_props()
-eduardo.set_energy(mandi.get_energy())
-gilberto.set_energy(mandi.get_energy())
-eduardo.show_props()
-gilberto.show_props()
-eduardo.set_energy(mandi.get_energy())
-gilberto.set_energy(mandi.get_energy())
-eduardo.show_props()
-gilberto.show_props()
-gilberto.set_energy(mandi.get_energy())
-eduardo.show_props()
-gilberto.show_props()
-bibiana.show_props()
-otro.show_props()
-otro.set_name('Ya tengo nombre')
-otro.show_props()
+# # eduardo.show_props()
+# # mandi.rot()
+# # mandi.show_props()
+# eduardo.set_energy(mandi.get_energy())
+# gilberto.set_energy(mandi.get_energy())
+# eduardo.show_props()
+# gilberto.show_props()
+# eduardo.set_energy(mandi.get_energy())
+# gilberto.set_energy(mandi.get_energy())
+# eduardo.show_props()
+# gilberto.show_props()
+# eduardo.set_energy(mandi.get_energy())
+# gilberto.set_energy(mandi.get_energy())
+# eduardo.show_props()
+# gilberto.show_props()
+# gilberto.set_energy(mandi.get_energy())
+# eduardo.show_props()
+# gilberto.show_props()
+# bibiana.show_props()
+# otro.show_props()
+# otro.set_name('Ya tengo nombre')
+# otro.show_props()
 
 # Funcionalidades para implementar a la clase Person:
 # - Caminar un número de pasos (hacia adelante o atrás)
 # - Correr
 # - Sentarse
 # - Pararse
+# - Detenerse
+
+eduardo = Person('Eduardo')
+eduardo.walk(3, 'adelante')
+eduardo.sit()
+gilberto = Person('Gilberto')
+gilberto.walk(5, 'atrás')
+gilberto.run('1Km/h', '5Km')
+eduardo.up()
+eduardo.sit()
+eduardo.up()
