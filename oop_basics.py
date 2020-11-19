@@ -122,6 +122,7 @@ class Person():
             print(f'{self.name} listo para moverse')
             self.isStill = True
 
+
             # Creo una instancia de la clase Mandarina
 mandi = Mandarina()  # Instancia/Objeto
 # eduardo.set_name('Eduardo')
@@ -175,3 +176,27 @@ eduardo.run('7Km/h', '4K')
 # eduardo.up()
 # eduardo.sit()
 # eduardo.up()
+
+# Crear una clase Perro
+# Atributos obligatorios:
+# - Raza
+# - Color
+# - Talla (pequeño, mediano, grande, gigante)
+# Métodos obligatorios:
+# - Ladrar
+# - Correr
+# - Caminar
+# - Olfatear
+# - Rascar
+# - Comer
+
+# Clase Croquetas
+# Atributos:
+# - Vitaminas
+# - Porcentaje de proteína
+# - Sabor
+# - Ingredientes
+# - Tipo de raza (para la que son recomendadas)
+# Métodos:
+# - Disolverse
+# - Liberación de nutrientes
