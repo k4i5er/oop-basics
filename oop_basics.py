@@ -201,7 +201,9 @@ class Dog():
     energy = 0
     isSit = False
     isUp = True
-    limit = 100
+    croquettes_limit = 100
+    energy_limit = 25
+    factor = 0
 
     # Constructor
     def __init__(self, name, race, color, size):
@@ -213,19 +215,35 @@ class Dog():
     def bark(self):
         print('woof, woof')
 
-    def run(self, distance, speed):
-        if self.isSit:
-            self.up()
-        print(
-            f'{self.name} está corriendo una distancia de {distance} a una velocidad de {speed}')
+    def run(self, distance, unit, speed):
+        if self.energy > 0:
+            if unit == 'm':
+                self.factor = 10
+            elif unit == 'km':
+                self.factor = 10 / 1000
+
+            if self.isSit:
+                self.up()
+            print(
+                f'{self.name} está corriendo una distancia de {distance}{unit} a una velocidad de {speed}')
+            self.energy -= 0.75 * (distance / self.factor)
+            self.show_energy()
+        else:
+            print(f'{self.name} ya no puede correr, necesita comer primero')
 
     def walk(self, steps, direction):
-        if self.isSit:
-            self.up()
-        if direction == 'atrás' or direction == 'adelante':
-            print(f'{self.name} camina {steps} pasos hacia {direction}')
+        if self.energy > 0:
+            if self.isSit:
+                self.up()
+            if direction == 'atrás' or direction == 'adelante':
+                print(f'{self.name} camina {steps} pasos hacia {direction}')
+            else:
+                print(f'{self.name} camina {steps} pasos hacia la {direction}')
+            self.energy -= 0.25 * steps
+            self.show_energy()
         else:
-            print(f'{self.name} camina {steps} pasos hacia la {direction}')
+            print(
+                f'{self.name} no puede caminar, necesita comer para obtener energía...')
 
     def sniff(self, whatever):
         print(f'{self.name} está olfateando {whatever}')
@@ -234,12 +252,19 @@ class Dog():
         print(f'{self.name} está rascando {whatever}')
 
     def eat(self, croquettes, number_of_croquettes):
-        if self.limit > 0:
-            print(f'{self.name} se está comiendo {number_of_croquettes} croquetas')
-            croquettes.disolve()
-            croquettes.liberation()
-            self.energy += number_of_croquettes * croquettes.get_proteins(self)
-            self.limit -= number_of_croquettes
+        if self.croquettes_limit > 0 and self.energy_limit <= 25:
+            if self.energy + number_of_croquettes * croquettes.get_proteins(self) <= 25 and self.croquettes_limit - number_of_croquettes > 0:
+                print(
+                    f'{self.name} se está comiendo {number_of_croquettes} croquetas')
+                croquettes.disolve()
+                croquettes.liberation()
+                self.energy += number_of_croquettes * \
+                    croquettes.get_proteins(self)
+                self.croquettes_limit -= number_of_croquettes
+            else:
+                print(
+                    f'{self.name} no puede comer tantas croquetas, porque excede su energía máxima')
+            self.show_energy()
         else:
             print(
                 f'{self.name} ya no puede seguir comiendo, está lleno a reventar...')
@@ -276,25 +301,30 @@ class Croquettes():
     ingredients = []
     race_for = ''
     name = ''
+    animal = ''
 
     # Constructor
-    def __init__(self, name, vitamins, ingredients, protein_pct, flavor, race_for):
+    def __init__(self, name, vitamins, ingredients, protein_pct, flavor, animal, race_for):
         self.name = name
         self.vitamins = vitamins
         self.protein_pct = protein_pct
         self.ingredients = ingredients
         self.flavor = flavor
         self.race_for = race_for
+        self.animal = animal
 
     def disolve(self):
-        print(f'Croquetas {self.name} en proceso de disolución...')
+        self.algo = 0
+        print(
+            f'Croquetas {self.name} {self.animal} en proceso de disolución...')
 
     def liberation(self):
         print(f'Croquetas {self.name} liberando nutrientes...')
 
     def get_proteins(self, dog):
         if type(dog) == Dog:
-            print(f'Liberando nutrientes para {dog.name}')
+            print(
+                f'Liberando nutrientes para {dog.name}')
             return self.protein_pct
         else:
             print(f'Sólo un perro puede aprovechar las proteínas /=')
@@ -312,19 +342,38 @@ pedigree = Croquettes('Pedigree', ['Hierro', 'A', 'Riboflavina', 'Zinc', 'Seleni
 
 solovino.sit()
 solovino.sniff('un gato')
+solovino.walk(3, 'izquierda')
+solovino.eat(dog_chow, 160)
+solovino.walk(3, 'izquierda')
+solovino.run(5, 'm', '500m/s')
+solovino.run(1, 'm', '500m/s')
+solovino.eat(dog_chow, 1)
 
-firulais.walk(3, 'adelante')
-firulais.show_energy()
-firulais.eat(dog_chow, 50)
-firulais.show_energy()
-firulais.eat(dog_chow, 50)
-firulais.show_energy()
-firulais.eat(dog_chow, 5)
+# firulais.walk(3, 'adelante')
+# firulais.show_energy()
+# firulais.eat(dog_chow, 50)
+# firulais.show_energy()
+# firulais.eat(dog_chow, 50)
+# firulais.show_energy()
+# firulais.eat(dog_chow, 5)
 
 # ToDo:
-# - Al poner al perro al caminar, debe gastar parte de su energía, dependiendo del número de
-#   pasos que dé (0.25 puntos de energía por cada paso)
-# - Al poner al perro a correr, debe gastar parte de su energía, dependiendo de la velocidad
-#   y la distancia recorridas (0.75 puntos por cada 10 metros recorridos)
-# - Establecer límites de comida, en función del número de croquetas y energía máxima que puede
-#   asimilar el perro (energía máxima: 25)
+# - Crear una clase Cat donde se puedan instanciar objetos de este tipo, con sus métodos y atributos
+# - Crear objetos Cat y Dog que puedan interactuar entre ellos:
+#   Ejemplo:
+#     - Solovino ve a Pusheen
+#     - Pusheen ve a Solovino
+#     - Solovino corre tras Pusheen a una velocidad de 5km/h
+#     - Solovino ahora tiene 'X' cantidad de energía
+#     - Pusheen corre a una velocidad de 1km/h
+#     - Solovino alcanza a Pusheen y lo ataca
+#     - Pusheen se ha ido al cielo de los gatos )'=
+
+#     - Solovino ve a Pusheen
+#     - Pusheen ve a Solovino
+#     - Solovino corre tras Pusheen a una velocidad de 5km/h
+#     - Solovino ahora tiene 'X' cantidad de energía
+#     - Pusheen corre a una velocidad de 6km/h
+#     - Pusheen escala un árbol
+#     - Pusheen ahora tiene 'Y' cantidad de energía
+#     - Solovino ladra a Pusheen
