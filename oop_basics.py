@@ -190,7 +190,6 @@
 # - Rascar
 # - Comer
 
-
 class Dog():
     race = ''
     color = ''
@@ -215,7 +214,10 @@ class Dog():
     def bark(self):
         print('woof, woof')
 
-    def run(self, distance, unit, speed):
+    def run(self, distance, unit, speed, cat=''):
+        if type(cat) == Cat:
+            print(f'{self.name} va a correr tras {cat.name}')
+            # print(f'{self.name} va a correr tras {cat.get_name()}')
         if self.energy > 0:
             if unit == 'm':
                 self.factor = 10
@@ -282,6 +284,103 @@ class Dog():
         self.isSit = False
         self.isUp = True
 
+
+class Cat():
+    race = ''
+    color = ''
+    size = ''
+    name = ''
+    nose = True
+    legs = 4
+    energy = 0
+    isSit = False
+    isUp = True
+    croquettes_limit = 100
+    energy_limit = 25
+    factor = 0
+    has_eaten = False
+
+    # Constructor
+    def __init__(self, name, race, color, size):
+        self.name = name
+        self.race = race
+        self.color = color
+        self.size = size
+
+    def bark(self):
+        print('woof, woof')
+
+    def run(self, distance, unit, speed, cat=''):
+        if type(cat) == Cat:
+            print(f'{self.name} va a correr tras {cat.name}')
+            # print(f'{self.name} va a correr tras {cat.get_name()}')
+        if self.energy > 0:
+            if unit == 'm':
+                self.factor = 10
+            elif unit == 'km':
+                self.factor = 10 / 1000
+
+            if self.isSit:
+                self.up()
+            print(
+                f'{self.name} está corriendo una distancia de {distance}{unit} a una velocidad de {speed}')
+            self.energy -= 0.75 * (distance / self.factor)
+            self.show_energy()
+        else:
+            print(f'{self.name} ya no puede correr, necesita comer primero')
+
+    def walk(self, steps, direction):
+        if self.energy > 0:
+            if self.isSit:
+                self.up()
+            if direction == 'atrás' or direction == 'adelante':
+                print(f'{self.name} camina {steps} pasos hacia {direction}')
+            else:
+                print(f'{self.name} camina {steps} pasos hacia la {direction}')
+            self.energy -= 0.25 * steps
+            self.show_energy()
+        else:
+            print(
+                f'{self.name} no puede caminar, necesita comer para obtener energía...')
+
+    def sniff(self, whatever):
+        print(f'{self.name} está olfateando {whatever}')
+
+    def scratch(self, whatever):
+        print(f'{self.name} está rascando {whatever}')
+
+    def eat(self, croquettes, number_of_croquettes):
+        if self.croquettes_limit > 0 and self.energy_limit <= 25:
+            if self.energy + number_of_croquettes * croquettes.get_proteins(self) <= 25 and self.croquettes_limit - number_of_croquettes > 0:
+                print(
+                    f'{self.name} se está comiendo {number_of_croquettes} croquetas')
+                croquettes.disolve()
+                croquettes.liberation()
+                self.energy += number_of_croquettes * \
+                    croquettes.get_proteins(self)
+                self.croquettes_limit -= number_of_croquettes
+                self.has_eaten = True
+            else:
+                print(
+                    f'{self.name} no puede comer tantas croquetas, porque excede su energía máxima')
+            self.show_energy()
+        else:
+            print(
+                f'{self.name} ya no puede seguir comiendo, está lleno a reventar...')
+
+    def show_energy(self):
+        print(f'{self.name} ahora tiene {self.energy} puntos de energía! (=')
+
+    def sit(self):
+        print(f'{self.name} ahora está sentado')
+        self.isSit = True
+        self.isUp = False
+
+    def up(self):
+        print(f'{self.name} ahora está de parado')
+        self.isSit = False
+        self.isUp = True
+
 # Clase Croquetas
 # Atributos:
 # - Vitaminas
@@ -304,7 +403,7 @@ class Croquettes():
     animal = ''
 
     # Constructor
-    def __init__(self, name, vitamins, ingredients, protein_pct, flavor, animal, race_for):
+    def __init__(self, vitamins, ingredients, protein_pct, flavor, animal, race_for, name='Delmon'):
         self.name = name
         self.vitamins = vitamins
         self.protein_pct = protein_pct
@@ -316,18 +415,23 @@ class Croquettes():
     def disolve(self):
         self.algo = 0
         print(
-            f'Croquetas {self.name} {self.animal} en proceso de disolución...')
+            f'Croquetas {self.name} para {self.animal} en proceso de disolución...')
 
     def liberation(self):
         print(f'Croquetas {self.name} liberando nutrientes...')
 
-    def get_proteins(self, dog):
-        if type(dog) == Dog:
+    def get_proteins(self, animal):
+        if type(animal) == Dog or type(animal) == Cat:
             print(
-                f'Liberando nutrientes para {dog.name}')
+                f'Liberando nutrientes para {animal.name}')
             return self.protein_pct
         else:
             print(f'Sólo un perro puede aprovechar las proteínas /=')
+
+
+pastorcillo = Dog('Pastorcillo', 'Pastor Alemán', 'Miel/Negro', 'Grande')
+
+figo = Cat('Figo', 'Angora', 'Blanco', 'Regular')
 
 
 # Perros
@@ -335,19 +439,33 @@ solovino = Dog('Solovino', 'eléctrico', 'gris percudido', 'mediano')
 firulais = Dog('Firulais', 'Pastor Alemán', 'Miel/negro', 'grande')
 
 # Croquetas
-dog_chow = Croquettes('Dog Chow', ['Complejo B', 'D', 'A', 'Zinc'], [
-                      'Huesos de pollo molidos', 'Carne de cerdo', 'Carne de res', 'vegetales'], 0.21, 'Carnes a las finas hierbas', 'Grandes')
-pedigree = Croquettes('Pedigree', ['Hierro', 'A', 'Riboflavina', 'Zinc', 'Selenio'], [
-                      'Carne de res', 'huesos molidos de cerdo'], 0.17, 'Trocitos de carne y huesos', 'Medianas')
+dog_chow = Croquettes(['Complejo B', 'D', 'A', 'Zinc'], [
+                      'Huesos de pollo molidos', 'Carne de cerdo', 'Carne de res', 'vegetales'], 0.21, 'Carnes a las finas hierbas', 'Perro', 'Grandes', 'Dog Chow')
+pedigree = Croquettes(['Hierro', 'A', 'Riboflavina', 'Zinc', 'Selenio'], [
+                      'Carne de res', 'huesos molidos de cerdo'], 0.17, 'Trocitos de carne y huesos', 'Perro', 'Medianas', 'Pedigree')
+del_monton = Croquettes(['Vitaminas'], [
+                        'Ingredientes'], 0.1, 'Salmón ahumado', 'Gato', 'todas las razas')
 
-solovino.sit()
-solovino.sniff('un gato')
-solovino.walk(3, 'izquierda')
-solovino.eat(dog_chow, 160)
-solovino.walk(3, 'izquierda')
-solovino.run(5, 'm', '500m/s')
-solovino.run(1, 'm', '500m/s')
-solovino.eat(dog_chow, 1)
+print(f'>>>>>>>>> {del_monton.name}')
+
+
+def main_function():
+    solovino.sit()
+    solovino.sniff('un gato')
+    solovino.walk(3, 'izquierda')
+    solovino.eat(dog_chow, 160)
+    solovino.walk(3, 'izquierda')
+    solovino.run(5, 'm', '500m/s')
+    solovino.run(1, 'm', '500m/s', figo)
+    solovino.eat(dog_chow, 1)
+    figo.eat(dog_chow, 1)
+    if not figo.has_eaten:
+        figo.eat(dog_chow, 6)
+    else:
+        print(f'{figo.name} ya comió, no lo estés engordando...')
+
+
+main_function()
 
 # firulais.walk(3, 'adelante')
 # firulais.show_energy()
