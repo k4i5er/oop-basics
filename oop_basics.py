@@ -190,6 +190,10 @@
 # - Rascar
 # - Comer
 
+from tkinter.ttk import Label, Frame, Entry, Button, Style
+from tkinter import Tk, X, LEFT, TOP, RIGHT
+
+
 class Dog():
     race = ''
     color = ''
@@ -213,6 +217,7 @@ class Dog():
 
     def bark(self):
         print('woof, woof')
+        lbl_msg.configure(text='woof, woof')
 
     def run(self, distance, unit, speed, cat=''):
         if type(cat) == Cat:
@@ -429,12 +434,11 @@ class Croquettes():
             print(f'Sólo un perro puede aprovechar las proteínas /=')
 
 
-pastorcillo = Dog('Pastorcillo', 'Pastor Alemán', 'Miel/Negro', 'Grande')
-
 figo = Cat('Figo', 'Angora', 'Blanco', 'Regular')
 
 
 # Perros
+pastorcillo = Dog('Pastorcillo', 'Pastor Alemán', 'Miel/Negro', 'Grande')
 solovino = Dog('Solovino', 'eléctrico', 'gris percudido', 'mediano')
 firulais = Dog('Firulais', 'Pastor Alemán', 'Miel/negro', 'grande')
 
@@ -446,7 +450,8 @@ pedigree = Croquettes(['Hierro', 'A', 'Riboflavina', 'Zinc', 'Selenio'], [
 del_monton = Croquettes(['Vitaminas'], [
                         'Ingredientes'], 0.1, 'Salmón ahumado', 'Gato', 'todas las razas')
 
-print(f'>>>>>>>>> {del_monton.name}')
+# Lista de instancias de tipo Cat o Dog
+pet_list = []
 
 
 def main_function():
@@ -495,3 +500,77 @@ main_function()
 #     - Pusheen escala un árbol
 #     - Pusheen ahora tiene 'Y' cantidad de energía
 #     - Solovino ladra a Pusheen
+
+
+def create_pet():
+    if entry_pet_type.get() == 'Perro':
+        print('Creando perro')
+        pet = Dog(str(entry_pet_name.get()), str(entry_pet_race.get()),
+                  str(entry_pet_color.get()), str(entry_pet_size.get()))
+    else:
+        print('Creando gato')
+        pet = Cat(entry_pet_name.get(), entry_pet_race.get(),
+                  entry_pet_color.get(), entry_pet_size.get())
+    pet_list.append(pet)
+
+    # Investigar el uso del widget Combobox
+
+
+def main_window(dimension, title):
+    global root
+    global lbl_msg
+    global entry_pet_type
+    global entry_pet_name
+    global entry_pet_race
+    global entry_pet_color
+    global entry_pet_size
+
+    root = Tk()
+    root.geometry(dimension)
+    root.title(title)
+
+    # myStyle = Style()
+    # myStyle.configure('pet_Entrys.TEntry', width=7)
+
+    frm_pet_type = Frame(root)
+    Label(frm_pet_type, text='Tipo de mascota:').pack(side=LEFT)
+    entry_pet_type = Entry(frm_pet_type, width=35)
+    entry_pet_type.pack(side=RIGHT, fill=X)
+    frm_pet_type.pack(fill=X, padx=10, pady=10)
+
+    frm_pet_name = Frame(root)
+    Label(frm_pet_name, text='Nombre de la mascota:').pack(side=LEFT)
+    entry_pet_name = Entry(frm_pet_name, width=35)
+    entry_pet_name.pack(side=RIGHT, fill=X)
+    frm_pet_name.pack(fill=X, padx=10, pady=10)
+
+    frm_pet_race = Frame(root)
+    Label(frm_pet_race, text='Raza:').pack(side=LEFT)
+    entry_pet_race = Entry(frm_pet_race, width=35)
+    entry_pet_race.pack(side=RIGHT, fill=X)
+    frm_pet_race.pack(fill=X, padx=10, pady=10)
+
+    frm_pet_color = Frame(root)
+    Label(frm_pet_color, text='Color:').pack(side=LEFT)
+    entry_pet_color = Entry(frm_pet_color, width=35)
+    entry_pet_color.pack(side=RIGHT, fill=X)
+    frm_pet_color.pack(fill=X, padx=10, pady=10)
+
+    frm_pet_size = Frame(root)
+    Label(frm_pet_size, text='Tamaño:').pack(side=LEFT)
+    entry_pet_size = Entry(frm_pet_size, width=35)
+    entry_pet_size.pack(side=RIGHT, fill=X)
+    frm_pet_size.pack(fill=X, padx=10, pady=10)
+
+    Button(root, text='Crear nueva mascota', command=create_pet).pack()
+
+    frm_msg = Frame(root)
+    lbl_msg = Label(frm_msg)
+    lbl_msg.pack()
+    frm_msg.pack(fill=X)
+
+
+main_window('400x200', 'Perros & Gatos')
+# firulais.bark()
+
+root.mainloop()
