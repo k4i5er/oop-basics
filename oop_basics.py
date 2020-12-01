@@ -190,7 +190,7 @@
 # - Rascar
 # - Comer
 
-from tkinter.ttk import Label, Frame, Entry, Button, Style
+from tkinter.ttk import Label, Frame, Entry, Button, Style, Combobox
 from tkinter import Tk, X, LEFT, TOP, RIGHT
 
 
@@ -503,7 +503,7 @@ main_function()
 
 
 def create_pet():
-    if entry_pet_type.get() == 'Perro':
+    if cmb_pet_type.get() == 'Perro':
         print('Creando perro')
         pet = Dog(str(entry_pet_name.get()), str(entry_pet_race.get()),
                   str(entry_pet_color.get()), str(entry_pet_size.get()))
@@ -516,14 +516,31 @@ def create_pet():
     # Investigar el uso del widget Combobox
 
 
+def show_pet_type(event):
+    print(f'>>> Has seleccionado {cmb_pet_type.get()} Evento:{event}')
+
+
+def add_pet_type(event):
+    values = list(cmb_pet_type['values'])
+    values.append(cmb_pet_type.get())
+    cmb_pet_type['values'] = values
+
+
+def x_pet_type(event):
+    if len(cmb_pet_type.get())-1 == 0:
+        print('>>> Combo vacío')
+    else:
+        print('>>> Todavía hay caracteres')
+
+
 def main_window(dimension, title):
     global root
     global lbl_msg
-    global entry_pet_type
     global entry_pet_name
     global entry_pet_race
     global entry_pet_color
     global entry_pet_size
+    global cmb_pet_type
 
     root = Tk()
     root.geometry(dimension)
@@ -534,8 +551,19 @@ def main_window(dimension, title):
 
     frm_pet_type = Frame(root)
     Label(frm_pet_type, text='Tipo de mascota:').pack(side=LEFT)
-    entry_pet_type = Entry(frm_pet_type, width=35)
-    entry_pet_type.pack(side=RIGHT, fill=X)
+
+    # Widget Combobox #
+    cmb_pet_type = Combobox(frm_pet_type)
+    cmb_pet_type['values'] = ('Perro', 'Gato')
+    cmb_pet_type.current(0)
+    cmb_pet_type.bind('<<ComboboxSelected>>', show_pet_type)
+    cmb_pet_type.bind('<Return>', add_pet_type)
+    cmb_pet_type.bind('<BackSpace>', x_pet_type)
+    cmb_pet_type.bind('<Delete>', x_pet_type)
+
+    cmb_pet_type.pack(side=RIGHT, fill=X, expand=1)
+    ###################
+
     frm_pet_type.pack(fill=X, padx=10, pady=10)
 
     frm_pet_name = Frame(root)
@@ -574,3 +602,14 @@ main_window('400x200', 'Perros & Gatos')
 # firulais.bark()
 
 root.mainloop()
+
+# Misión:
+# Modificar el código para que el usuario agregue mascotas por nombre mediante un Combobox
+# y pueda seleccionar solamente entre 2 tipos de mascotas(Perro o Gato) de un segundo Combobox.
+# Si el usuario ya ha agregado una mascota y selecciona su nombre, la aplicación deberá mostrar
+# sus características correspondientes y mostrar el botón "Modificar".
+# Si el usuario borra el contenido del Combobox correspondiente al nombre de la mascota, entonces
+# la aplicación deberá borrar toda la información del formulario y ocultar el botón "Modificar"
+# y habilitar todos los entrys para permitir al usuario agregar una nueva mascota.
+# El botón modificar, habilitará todos los entrys para permitir al usuario actualizar los datos
+# de su mascota.
