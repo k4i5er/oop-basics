@@ -190,8 +190,8 @@
 # - Rascar
 # - Comer
 
-from tkinter.ttk import Label, Frame, Entry, Button, Style, Combobox
-from tkinter import Tk, X, LEFT, TOP, RIGHT, END
+from tkinter.ttk import Label, Frame, Entry, Button, Style, Combobox, Radiobutton
+from tkinter import Tk, X, LEFT, TOP, RIGHT, END, IntVar
 
 
 class Dog():
@@ -472,12 +472,24 @@ def main_function():
 
 # main_function()
 
+def add_new_pet():
+    cmb_pet_name.state(['!readonly'])
+    entry_pet_race.state(['!readonly'])
+    entry_pet_color.state(['!readonly'])
+    entry_pet_size.state(['!readonly'])
+    cmb_pet_name.delete(0, END)
+    entry_pet_race.delete(0, END)
+    entry_pet_color.delete(0, END)
+    entry_pet_size.delete(0, END)
+    btn_create_pet.configure(text='Crear nueva mascota', command=create_pet)
+
 
 def create_pet():
     pet = find_pet()
     print(f'>>>>PET {pet}')
     if pet == None:
-        if cmb_pet_type.get() == 'Perro':
+        # if cmb_pet_type.get() == 'Perro':
+        if opt.get() == 0:
             print('Creando perro')
             pet = Dog(str(cmb_pet_name.get()), str(entry_pet_race.get()),
                       str(entry_pet_color.get()), str(entry_pet_size.get()))
@@ -486,28 +498,28 @@ def create_pet():
             pet = Cat(cmb_pet_name.get(), entry_pet_race.get(),
                       entry_pet_color.get(), entry_pet_size.get())
         pet_list.append(pet)
+        add_pet_to_list()
         cmb_pet_name.delete(0, END)
         entry_pet_color.delete(0, END)
         entry_pet_race.delete(0, END)
         entry_pet_size.delete(0, END)
     else:
-        print(f'Actualizando mascota raza>>>> {entry_pet_race.get()}')
-        entry_pet_race.state(['!readonly'])
-        entry_pet_color.state(['!readonly'])
-        entry_pet_size.state(['!readonly'])
+        print(f'Actualizando mascota raza>>>> {entry_pet_race.get() }')
         pet_list[pet].race = entry_pet_race.get()
         pet_list[pet].color = entry_pet_color.get()
         pet_list[pet].size = entry_pet_size.get()
-        entry_pet_race.delete(0, END)
-        entry_pet_color.delete(0, END)
-        entry_pet_size.delete(0, END)
+        entry_pet_race.state(['readonly'])
+        entry_pet_color.state(['readonly'])
+        entry_pet_size.state(['readonly'])
+        btn_create_pet.configure(
+            text='Agregar nueva mascota', command=add_new_pet)
 
     if not (cmb_pet_name.get() in cmb_pet_name['values']):
         add_pet_to_list()
 
 
 def show_pet_type(event):
-    print(f'>>> Has seleccionado {cmb_pet_type.get()} Evento:{event}')
+    print(f'>>> Has seleccionado {cmb_pet_type.get()} ')
 
 
 def add_pet_to_list():
@@ -524,30 +536,36 @@ def enable_entrys():
     entry_pet_race.state(['!readonly'])
     entry_pet_color.state(['!readonly'])
     entry_pet_size.state(['!readonly'])
-    btn_create_pet.configure(text='Actualizar información', command=create_pet)
+    btn_create_pet.configure(text='Actualizar información')
+    btn_modify.pack_forget()
 
 
-def find_pet(event=False):
+def find_pet():
     for pet in pet_list:
         if cmb_pet_name.get() == pet.name:
-            if type(pet) == Dog:
-                cmb_pet_type.current(0)  # Perro en Combobox
-            else:
-                cmb_pet_type.current(1)  # Gato en Combobox
-            # entry_pet_race.setvar(name, pet.race)
-            entry_pet_race.insert(0, pet.race)
-            # entry_pet_color.setvar(color, pet.color)
-            entry_pet_color.insert(0, pet.color)
-            # entry_pet_size.setvar(size, pet.size)
-            entry_pet_size.insert(0, pet.size)
-            entry_pet_race.state(['readonly'])
-            entry_pet_color.state(['readonly'])
-            entry_pet_size.state(['readonly'])
-            btn_modify = Button(
-                root, text='Modificar información', command=enable_entrys)
-            btn_modify.pack(side=LEFT)
             return pet_list.index(pet)
     return None
+
+
+def show_pet(event):
+    pet = find_pet()
+    cmb_pet_name.state(['readonly'])
+    if type(pet_list[pet]) == Dog:
+        # cmb_pet_type.current(0)  # Perro en Combobox
+        opt.set(0)
+    else:
+        # cmb_pet_type.current(1)  # Gato en Combobox
+        opt.set(1)
+    # entry_pet_race.setvar(name, pet.race)
+    entry_pet_race.insert(0, pet_list[pet].race)
+    # entry_pet_color.setvar(color, pet.color)
+    entry_pet_color.insert(0, pet_list[pet].color)
+    # entry_pet_size.setvar(size, pet.size)
+    entry_pet_size.insert(0, pet_list[pet].size)
+    entry_pet_race.state(['readonly'])
+    entry_pet_color.state(['readonly'])
+    entry_pet_size.state(['readonly'])
+    btn_modify.pack(side=LEFT)
 
 
 def x_pet_type(event):
@@ -557,15 +575,21 @@ def x_pet_type(event):
         print('>>> Todavía hay caracteres')
 
 
+def show_selected():
+    print(f'Opción seleccionada: {opt.get()}')
+
+
 def main_window(dimension, title):
     global root
     global lbl_msg
     global entry_pet_race
     global entry_pet_color
     global entry_pet_size
-    global cmb_pet_type
+    # global cmb_pet_type
     global cmb_pet_name
     global btn_create_pet
+    global btn_modify
+    global opt
 
     root = Tk()
     root.geometry(dimension)
@@ -575,7 +599,7 @@ def main_window(dimension, title):
     Label(frm_pet_name, text='Nombre de la mascota:').pack(side=LEFT)
     cmb_pet_name = Combobox(frm_pet_name, width=33)
     cmb_pet_name.bind('<Return>', add_pet)
-    cmb_pet_name.bind('<<ComboboxSelected>>', find_pet)
+    cmb_pet_name.bind('<<ComboboxSelected>>', show_pet)
     cmb_pet_name.pack(side=RIGHT)
     frm_pet_name.pack(fill=X, padx=10, pady=10)
 
@@ -583,15 +607,20 @@ def main_window(dimension, title):
     Label(frm_pet_type, text='Tipo de mascota:').pack(side=LEFT)
 
     # Widget Combobox #
-    cmb_pet_type = Combobox(frm_pet_type, state='readonly', width=33)
-    cmb_pet_type['values'] = ('Perro', 'Gato')
-    cmb_pet_type.current(0)
-    # cmb_pet_type.bind('<<ComboboxSelected>>', show_pet_type)
-    # cmb_pet_type.bind('<Return>', add_pet_type)
-    # cmb_pet_type.bind('<BackSpace>', x_pet_type)
-    # cmb_pet_type.bind('<Delete>', x_pet_type)
+    # cmb_pet_type = Combobox(frm_pet_type, state='readonly', width=33)
+    # cmb_pet_type['values'] = ('Perro', 'Gato')
+    # cmb_pet_type.current(0)
+    # cmb_pet_type.pack(side=RIGHT)
+    ###################
 
-    cmb_pet_type.pack(side=RIGHT)
+    # Widget Radiobutton #
+    opt = IntVar()
+    rb_dog = Radiobutton(frm_pet_type, text='Perro', value=0,
+                         command=show_selected, variable=opt)
+    rb_dog.pack()
+    rb_cat = Radiobutton(frm_pet_type, text='Gato', value=1,
+                         command=show_selected, variable=opt)
+    rb_cat.pack()
     ###################
 
     frm_pet_type.pack(fill=X, padx=10, pady=10)
@@ -617,6 +646,9 @@ def main_window(dimension, title):
     btn_create_pet = Button(root, text='Crear nueva mascota',
                             command=create_pet)
     btn_create_pet.pack(side=LEFT)
+
+    btn_modify = Button(
+        root, text='Modificar información', command=enable_entrys)
 
     frm_msg = Frame(root)
     lbl_msg = Label(frm_msg)
